@@ -1,7 +1,7 @@
 "use client";
 
 import { Bot } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 import { useAutoScroll } from "@/hooks/use-auto-scroll";
 
@@ -19,12 +19,20 @@ interface MessageListProps {
   isStreaming: boolean;
 }
 
+const MOOD_TAG_REGEX = /\[MOOD:user=\w+,ai=\w+\]/;
+
 export function MessageList({ messages, streamingContent, isStreaming }: MessageListProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollToBottom, isScrolledToBottom } = useAutoScroll(containerRef);
   const prevMessageCountRef = useRef(messages.length);
 
-  // Auto-scroll when new messages are added (e.g., user sends a message)
+  // Strip mood tag from streaming content so it doesn't flash
+  const displayStreamingContent = useMemo(
+    () => streamingContent.replace(MOOD_TAG_REGEX, "").trim(),
+    [streamingContent],
+  );
+
+  // Auto-scroll when new messages are added
   useEffect(() => {
     if (messages.length > prevMessageCountRef.current) {
       scrollToBottom();
@@ -48,29 +56,55 @@ export function MessageList({ messages, streamingContent, isStreaming }: Message
         {messages.map((message) => (
           <MessageBubble key={message.id} role={message.role} content={message.content} />
         ))}
-        {isStreaming && streamingContent && (
+        {isStreaming && displayStreamingContent && (
           <div className="flex gap-3 px-4 py-3">
-            <div className="bg-muted flex size-8 shrink-0 items-center justify-center rounded-full">
-              <Bot className="text-muted-foreground size-4" />
+            <div
+              className="flex size-8 shrink-0 items-center justify-center rounded-full"
+              style={{
+                backgroundColor: "rgba(255,255,255,0.15)",
+                border: "1px solid rgba(255,255,255,0.2)",
+              }}
+            >
+              <Bot className="size-4 text-white/80" />
             </div>
-            <div className="bg-muted text-foreground max-w-[80%] rounded-2xl px-4 py-2.5">
+            <div
+              className="max-w-[80%] rounded-2xl px-4 py-2.5"
+              style={{
+                backgroundColor: "rgba(255,255,255,0.12)",
+                color: "#fff",
+                border: "1px solid rgba(255,255,255,0.15)",
+                textShadow: "0 1px 3px rgba(0,0,0,0.2)",
+              }}
+            >
               <p className="text-sm whitespace-pre-wrap">
-                {streamingContent}
+                {displayStreamingContent}
                 <span className="streaming-cursor ml-0.5 inline-block h-4 w-1.5 align-middle" />
               </p>
             </div>
           </div>
         )}
-        {isStreaming && !streamingContent && (
+        {isStreaming && !displayStreamingContent && (
           <div className="flex gap-3 px-4 py-3">
-            <div className="bg-muted flex size-8 shrink-0 items-center justify-center rounded-full">
-              <Bot className="text-muted-foreground size-4" />
+            <div
+              className="flex size-8 shrink-0 items-center justify-center rounded-full"
+              style={{
+                backgroundColor: "rgba(255,255,255,0.15)",
+                border: "1px solid rgba(255,255,255,0.2)",
+              }}
+            >
+              <Bot className="size-4 text-white/80" />
             </div>
-            <div className="bg-muted max-w-[80%] rounded-2xl px-4 py-2.5">
+            <div
+              className="max-w-[80%] rounded-2xl px-4 py-2.5"
+              style={{
+                backgroundColor: "rgba(255,255,255,0.12)",
+                border: "1px solid rgba(255,255,255,0.15)",
+              }}
+            >
               <div className="flex items-center gap-1">
-                <span className="bg-primary/60 size-1.5 animate-bounce rounded-full [animation-delay:0ms]" />
-                <span className="bg-primary/60 size-1.5 animate-bounce rounded-full [animation-delay:150ms]" />
-                <span className="bg-primary/60 size-1.5 animate-bounce rounded-full [animation-delay:300ms]" />
+                <span className="size-1.5 animate-bounce rounded-full bg-white/60 [animation-delay:0ms]" />
+                <span className="size-1.5 animate-bounce rounded-full bg-white/60 [animation-delay:150ms]" />
+                <span className="size-1.5 animate-bounce rounded-full bg-white/60 [animation-delay:300ms]" />
               </div>
             </div>
           </div>

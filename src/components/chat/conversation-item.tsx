@@ -92,8 +92,8 @@ export function ConversationItem({
       className={cn(
         "group flex items-center gap-1 rounded-md px-2 py-1.5 text-sm cursor-pointer border-l-2",
         isActive
-          ? "border-primary bg-primary/15 text-primary"
-          : "border-transparent hover:bg-accent/50 text-foreground",
+          ? "border-white bg-white/15 text-white"
+          : "border-transparent text-white/70 hover:bg-white/10 hover:text-white",
       )}
     >
       <button type="button" className="flex-1 truncate text-left" onClick={() => onSelect(id)}>

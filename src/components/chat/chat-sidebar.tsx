@@ -42,7 +42,7 @@ function SidebarContent({
       <div className="p-3">
         <Button
           variant="outline"
-          className="w-full justify-start gap-2 border-primary/30 hover:bg-primary/10 hover:text-primary"
+          className="w-full justify-start gap-2 border-white/20 text-white/90 hover:bg-white/10 hover:text-white"
           onClick={onNewChat}
         >
           <Plus className="size-4" />
@@ -51,7 +51,7 @@ function SidebarContent({
       </div>
       <ScrollArea className="flex-1 px-2">
         {sorted.length === 0 ? (
-          <div className="text-muted-foreground flex flex-col items-center gap-2 px-4 py-8 text-center text-sm">
+          <div className="flex flex-col items-center gap-2 px-4 py-8 text-center text-sm text-white/50">
             <MessageSquare className="size-8 opacity-50" />
             <p>No conversations yet</p>
           </div>
@@ -88,7 +88,13 @@ export function ChatSidebar({
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="bg-sidebar hidden h-full w-72 border-r md:block">
+      <aside
+        className="hidden h-full w-72 border-r backdrop-blur-xl md:block"
+        style={{
+          backgroundColor: "rgba(0,0,0,0.4)",
+          borderColor: "rgba(255,255,255,0.1)",
+        }}
+      >
         <SidebarContent
           conversations={conversations}
           activeConversationId={activeConversationId}

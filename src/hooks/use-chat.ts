@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
+import { parseMoodTag } from "@/features/mood";
+
 import { useLocalStorage } from "./use-local-storage";
 
 interface ChatMessage {
@@ -75,7 +77,11 @@ function makeTempMessage(conversationId: string, role: string, content: string):
   };
 }
 
-export function useChat() {
+interface UseChatOptions {
+  onMoodDetected?: (userMood: string, aiMood: string) => void;
+}
+
+export function useChat(options?: UseChatOptions) {
   const {
     items: conversations,
     addItem,
@@ -171,10 +177,14 @@ export function useChat() {
         const accumulated = await readSSEStream(reader, setStreamingContent);
 
         if (accumulated) {
+          const { moods, cleanText } = parseMoodTag(accumulated);
+          if (moods && options?.onMoodDetected) {
+            options.onMoodDetected(moods.userMood, moods.aiMood);
+          }
           const assistantMessage = makeTempMessage(
             conversationId ?? activeConversationId ?? "",
             "assistant",
-            accumulated,
+            cleanText,
           );
           setMessages((prev) => [...prev, assistantMessage]);
         }
@@ -190,7 +200,7 @@ export function useChat() {
         setStreamingContent("");
       }
     },
-    [activeConversationId, isStreaming, addItem, updateItem],
+    [activeConversationId, isStreaming, addItem, updateItem, options?.onMoodDetected],
   );
 
   const selectConversation = useCallback((id: string) => {

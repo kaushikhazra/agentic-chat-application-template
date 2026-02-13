@@ -185,3 +185,23 @@
 .prose pre {
   overflow-x: auto;
 }
+
+/* Chemistry gradient drift animation */
+@keyframes chemistry-drift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Global smooth transitions for mood changes */
+* {
+  transition-property: background-color, border-color, box-shadow;
+  transition-duration: 0.3s;
+  transition-timing-function: ease;
+}
